@@ -41,7 +41,7 @@ project/
 1. **Clone the repository:**
 
    ```bash
-   git clone (https://github.com/krishbhalodiya/Prosth-Ankle-Prediction-Model.git)
+   git clone https://github.com/krishbhalodiya/Prosth-Ankle-Prediction-Model.git
    cd Prosth-Ankle-Prediction-Model
    ```
 
