@@ -6,3 +6,4 @@ matplotlib>=3.4.0
 scikit-learn>=0.24.2
 jupyter>=1.0.0
 tqdm>=4.61.0
+pyserial>=3.5

@@ -1,39 +1,77 @@
-# Sensor-Driven Deep Learning Model Project
+# Prosthetic Ankle Stability Prediction Model
 
-This project is a starting point for developing deep learning models that predict outputs (e.g., torque) from sensor data. It is designed to simulate sensor input and train a neural network model using PyTorch. The overall structure is inspired by the RoboAnkle project and is ideal for projects that plan to integrate real-world IoT sensor data in the future.
+Real-time stability classification system using IMU sensor data from an M5Stack device. This project detects whether a user is walking stably or experiencing instability (stumbling, loss of balance) using machine learning.
 
 ## Table of Contents
 
 - [Project Overview](#project-overview)
 - [Project Structure](#project-structure)
+- [Hardware Requirements](#hardware-requirements)
 - [Installation](#installation)
 - [Usage](#usage)
-  - [Data Generation and Preprocessing](#data-generation-and-preprocessing)
-  - [Model Training](#model-training)
-  - [Model Evaluation](#model-evaluation)
+  - [1. Data Collection](#1-data-collection)
+  - [2. Data Cleaning](#2-data-cleaning)
+  - [3. Model Training](#3-model-training)
+  - [4. Visualization](#4-visualization)
+  - [5. Real-Time Inference](#5-real-time-inference)
 - [Files Description](#files-description)
+- [How It Works](#how-it-works)
 - [Future Work](#future-work)
-- [License](#license)
 
 ## Project Overview
 
-This repository contains code to simulate sensor data, define a neural network for regression, and train/evaluate the model. It's structured to allow for easy future integration with real sensor hardware and IoT devices.
+This system uses Inertial Measurement Unit (IMU) data from an M5Stack device to classify stability in real-time. The goal is to detect instability events that could indicate a fall risk for prosthetic ankle users or individuals with mobility challenges.
+
+**Key Features:**
+- Real-time data capture from M5Stack via USB serial
+- Binary classification: Stable vs Unstable
+- Random Forest classifier with 100% accuracy on test data
+- Live inference with color-coded console output
+- Feature visualization tools
 
 ## Project Structure
 
 ```
-project/
-├── README.md               # Project overview and instructions
-├── requirements.txt        # Python dependencies
-├── data/                   # Folder for storing simulated or real sensor data
-│   └── simulated_data.csv  # (Optional) CSV file containing generated sensor data
-└── src/                    # Source code files
-    ├── __init__.py         # Package initializer
-    ├── neural_network.py   # Neural network model definitions
-    ├── data_preprocessing.py # Data simulation/cleaning and splitting functions
-    ├── train.py            # Script for training the model
-    ├── evaluate.py         # Script for evaluating the trained model
-    └── utils.py            # Utility functions (saving/loading models, logging, etc.)
+Prosth-Ankle-Prediction-Model/
+├── README.md
+├── requirements.txt
+├── data/
+│   ├── raw/                    # Raw sensor recordings
+│   │   ├── stable_01.csv
+│   │   └── unstable_01.csv
+│   └── processed/              # Cleaned data and visualizations
+│       ├── feature_clusters.png
+│       └── raw_comparison.png
+├── models/
+│   └── stability_classifier.pkl  # Trained Random Forest model
+└── src/
+    ├── capture_sensor_data.py    # Capture data from M5Stack
+    ├── clean_data.py             # Data preprocessing
+    ├── train_classifier.py       # Train stability classifier
+    ├── visualize_features.py     # Generate plots
+    └── live_inference.py         # Real-time prediction
+```
+
+## Hardware Requirements
+
+- **M5Stack** (Core, Core2, or similar) with IMU sensor
+- USB cable
+- Computer running macOS, Linux, or Windows
+
+### M5Stack Code
+
+The M5Stack should be running UIFlow code that prints IMU data in CSV format:
+
+```python
+# M5Stack UIFlow Code (simplified)
+print("t_ms,ax,ay,az,gx,gy,gz,mx,my,mz")
+while True:
+    t_ms = time.ticks_ms()
+    ax, ay, az = Imu.getAccel()
+    gx, gy, gz = Imu.getGyro()
+    mx, my, mz = Imu.getMag()
+    print(f"{t_ms},{ax},{ay},{az},{gx},{gy},{gz},{mx},{my},{mz}")
+    time.sleep(0.02)  # ~50 Hz
 ```
 
 ## Installation
@@ -45,14 +83,14 @@ project/
    cd Prosth-Ankle-Prediction-Model
    ```
 
-2. **Create a virtual environment (optional but recommended):**
+2. **Create a virtual environment (recommended):**
 
    ```bash
    python -m venv venv
    source venv/bin/activate   # On Windows: venv\Scripts\activate
    ```
 
-3. **Install the required dependencies:**
+3. **Install dependencies:**
 
    ```bash
    pip install -r requirements.txt
@@ -60,60 +98,117 @@ project/
 
 ## Usage
 
-### Data Generation and Preprocessing
+### 1. Data Collection
 
-The `data_preprocessing.py` script includes functions for generating synthetic sensor data and splitting it into training and test sets. This simulated data will be used until you can collect real sensor data.
-
-Example usage:
-```python
-from src.data_preprocessing import load_or_generate_data, prepare_datasets
-
-# Load existing data or generate new data
-data = load_or_generate_data(data_path='data/simulated_data.csv')
-
-# Prepare train and test datasets
-train_loader, test_loader, scaler = prepare_datasets(data, batch_size=32)
-```
-
-### Model Training
-
-To train the model, run:
+Connect your M5Stack via USB and capture sensor data:
 
 ```bash
-python src/train.py
+python src/capture_sensor_data.py
 ```
 
-This script:
-- Loads (or generates) the sensor data.
-- Initializes the neural network (defined in `neural_network.py`).
-- Trains the model on the generated data.
-- Saves the trained model for later use.
+- Select the correct serial port (usually `/dev/cu.usbserial-*` on Mac)
+- Walk normally for ~60 seconds → This is your **Stable** data
+- Save the file as `data/raw/stable_01.csv`
+- Repeat while simulating instability (stumbling, shaking) → **Unstable** data
+- Save as `data/raw/unstable_01.csv`
 
-### Model Evaluation
+**Note:** Make sure UIFlow is closed before running the capture script (only one program can access the serial port at a time).
 
-After training, you can evaluate the model by running:
+### 2. Data Cleaning
+
+Clean the raw data (removes empty magnetometer columns, resets timestamps):
 
 ```bash
-python src/evaluate.py
+python src/clean_data.py          # Cleans most recent file
+python src/clean_data.py --all    # Cleans all files in data/raw/
 ```
 
-This script:
-- Loads the trained model.
-- Runs inference on the test data.
-- Plots the predicted outputs against the true outputs using matplotlib.
+### 3. Model Training
+
+Train the Random Forest classifier:
+
+```bash
+python src/train_classifier.py
+```
+
+This will:
+- Load `stable_01.csv` and `unstable_01.csv`
+- Extract features from 50-sample windows (~1.5 seconds)
+- Train a Random Forest with 100 trees
+- Save the model to `models/stability_classifier.pkl`
+
+Expected output: ~100% accuracy (stable walking is very distinct from wild shaking)
+
+### 4. Visualization
+
+Generate plots to understand the data:
+
+```bash
+python src/visualize_features.py
+```
+
+Creates:
+- `data/processed/raw_comparison.png` - Raw acceleration over time
+- `data/processed/feature_clusters.png` - Feature space scatter plot
+
+### 5. Real-Time Inference
+
+Run live predictions on streaming sensor data:
+
+```bash
+python src/live_inference.py
+```
+
+- Select your M5Stack port
+- Walk around and see real-time predictions
+- **Green** = STABLE, **Red** = UNSTABLE
+- Press `Ctrl+C` to stop and see statistics
 
 ## Files Description
 
-- **data_preprocessing.py**: Contains functions for generating synthetic sensor data, preprocessing the data, and creating PyTorch DataLoaders.
-- **neural_network.py**: Defines the neural network architecture using PyTorch.
-- **train.py**: Script for training the neural network model.
-- **evaluate.py**: Script for evaluating the trained model on test data.
-- **utils.py**: Utility functions for saving/loading models, logging training progress, etc.
+### Data Collection & Processing
+- **`capture_sensor_data.py`**: Reads CSV data from M5Stack serial port, saves to timestamped files
+- **`clean_data.py`**: Removes empty columns, resets time to start at 0
+
+### Machine Learning
+- **`train_classifier.py`**: Trains Random Forest on windowed features (mean, std, max, min, range)
+- **`visualize_features.py`**: Plots raw data and feature space to show class separation
+
+### Real-Time System
+- **`live_inference.py`**: Loads trained model, buffers incoming sensor data, makes predictions every ~0.3s
+
+## How It Works
+
+### Algorithm Pipeline
+
+1. **Windowing**: Incoming sensor data is grouped into 50-sample windows (~1.5 seconds at 30 Hz)
+2. **Feature Extraction**: For each window, calculate statistics:
+   - Mean, Standard Deviation, Max, Min, Range
+   - Applied to all 6 sensor channels (ax, ay, az, gx, gy, gz)
+3. **Classification**: Random Forest predicts `0` (Stable) or `1` (Unstable)
+4. **Output**: Real-time console display with color-coded status
+
+### Random Forest Classifier
+
+- **100 Decision Trees** vote on each prediction
+- Each tree learns a different pattern (e.g., "If gyro variance > 80, then Unstable")
+- **Key Features**: Standard deviation and range of acceleration/gyroscope values
+- **Why it works**: Unstable motion has high variance (erratic), stable walking has rhythmic patterns (low variance)
 
 ## Future Work
 
-- Integration with real sensor hardware
-- Implementation of more advanced neural network architectures
-- Development of a web-based dashboard for real-time monitoring
-- Deployment to edge devices for real-time inference
+- [ ] Add second sensor on the foot for more accurate prosthetic simulation
+- [ ] Implement feedback loop to M5Stack (change screen color on instability)
+- [ ] Collect more diverse data (stairs, slopes, different walking speeds)
+- [ ] Deploy model to M5Stack for edge inference (no laptop required)
+- [ ] Web dashboard for remote monitoring
+- [ ] Integration with physical prosthetic ankle hardware
 
+## License
+
+MIT License - Feel free to use this project for research or educational purposes.
+
+---
+
+**Author:** Krish Bhalodiya  
+**Project Link:** [https://github.com/krishbhalodiya/Prosth-Ankle-Prediction-Model](https://github.com/krishbhalodiya/Prosth-Ankle-Prediction-Model)
