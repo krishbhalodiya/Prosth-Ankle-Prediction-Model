@@ -30,8 +30,10 @@ pip-wheel-metadata/
 # PyCharm
 .idea/
 
-# VS Code
-.vscode/
+# VS Code / Cursor — share workspace settings, keep personal files private
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 
 # macOS
 .DS_Store
