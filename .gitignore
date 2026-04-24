@@ -57,6 +57,9 @@ models/*.pt
 # Logs
 *.log
 
+# Exported notebook PDFs (regenerate with scripts/export_pdf.sh)
+*.pdf
+
 # Temporary files
 *.tmp
 *.bak
