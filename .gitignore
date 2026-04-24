@@ -40,13 +40,17 @@ pip-wheel-metadata/
 data/raw/*.csv
 data/processed/*.csv
 
+# Benchmark datasets (large, download separately)
+data/camargo2021/
+data/reznick2021/
+
 # Keep example structure
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 
 # Models (optional - uncomment if models are too large to commit)
 # models/*.pkl
-# models/*.pt
+models/*.pt
 
 # Logs
 *.log

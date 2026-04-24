@@ -1,0 +1,46 @@
+{
+  "architecture": "Transformer",
+  "metrics": {
+    "level_ground": {
+      "rmse": 1.500369668006897,
+      "r2": 0.9801419377326965,
+      "mae": 1.2692582607269287,
+      "n_windows": 1568
+    },
+    "treadmill": {
+      "rmse": 1.5046179294586182,
+      "r2": 0.9797632694244385,
+      "mae": 1.2637279033660889,
+      "n_windows": 784
+    },
+    "ramp_ascent": {
+      "rmse": 5.792889595031738,
+      "r2": 0.5314252376556396,
+      "mae": 4.815276622772217,
+      "n_windows": 784
+    },
+    "ramp_descent": {
+      "rmse": 3.595921516418457,
+      "r2": 0.920312762260437,
+      "mae": 3.2933778762817383,
+      "n_windows": 784
+    },
+    "stair_ascent": {
+      "rmse": 2.9237453937530518,
+      "r2": 0.9572528600692749,
+      "mae": 2.6234519481658936,
+      "n_windows": 784
+    },
+    "stair_descent": {
+      "rmse": 2.5810348987579346,
+      "r2": 0.9665058255195618,
+      "mae": 2.327958345413208,
+      "n_windows": 784
+    }
+  },
+  "meta": {
+    "mode": "transformer",
+    "params": 412801,
+    "checkpoint": "/Users/krishbhalodiya/Prosth-Ankle-Prediction-Model/models/shadow_limb_transformer.pt"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "architecture": "BiLSTM",
+  "metrics": {
+    "level_ground": {
+      "rmse": 1.4551246166229248,
+      "r2": 0.9813215136528015,
+      "mae": 1.2232072353363037,
+      "n_windows": 1568
+    },
+    "treadmill": {
+      "rmse": 1.4563878774642944,
+      "r2": 0.9810398817062378,
+      "mae": 1.2233290672302246,
+      "n_windows": 784
+    },
+    "ramp_ascent": {
+      "rmse": 5.525992393493652,
+      "r2": 0.5736081600189209,
+      "mae": 4.570969104766846,
+      "n_windows": 784
+    },
+    "ramp_descent": {
+      "rmse": 3.746021270751953,
+      "r2": 0.913521409034729,
+      "mae": 3.472102642059326,
+      "n_windows": 784
+    },
+    "stair_ascent": {
+      "rmse": 2.9493346214294434,
+      "r2": 0.956501305103302,
+      "mae": 2.6197590827941895,
+      "n_windows": 784
+    },
+    "stair_descent": {
+      "rmse": 2.649423360824585,
+      "r2": 0.9647073745727539,
+      "mae": 2.3293418884277344,
+      "n_windows": 784
+    }
+  },
+  "meta": {
+    "mode": "single",
+    "params": 573697,
+    "checkpoint": "/Users/krishbhalodiya/Prosth-Ankle-Prediction-Model/models/shadow_limb_lstm.pt"
+  }
+}

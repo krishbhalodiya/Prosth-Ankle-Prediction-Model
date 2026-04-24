@@ -1,0 +1,56 @@
+{
+  "model_path": "/Users/krishbhalodiya/Prosth-Ankle-Prediction-Model/models/shadow_limb_phase_lstm.pt",
+  "mode": "phase_lstm",
+  "reznick_dir": "/Users/krishbhalodiya/Prosth-Ankle-Prediction-Model/data/reznick2021",
+  "subjects": [
+    "S01",
+    "S02",
+    "S03",
+    "S04",
+    "S05",
+    "S06",
+    "S07",
+    "S08",
+    "S09",
+    "S10"
+  ],
+  "overall": {
+    "n_windows": 46060,
+    "phase_err_pct": 18.014760971069336,
+    "reconstructed_rmse_deg": 5.4994354248046875,
+    "reconstructed_mae_deg": 4.697563648223877
+  },
+  "by_condition": {
+    "walk_fast_flat": {
+      "n_windows": 7706,
+      "phase_err_pct": 3.765575885772705,
+      "rmse_deg": 7.480375289916992
+    },
+    "walk_normal_down": {
+      "n_windows": 7637,
+      "phase_err_pct": 16.687702178955078,
+      "rmse_deg": 6.136209964752197
+    },
+    "walk_normal_flat": {
+      "n_windows": 7605,
+      "phase_err_pct": 18.4539794921875,
+      "rmse_deg": 5.0499677658081055
+    },
+    "walk_normal_up": {
+      "n_windows": 7680,
+      "phase_err_pct": 22.033824920654297,
+      "rmse_deg": 5.142589092254639
+    },
+    "walk_slow_flat": {
+      "n_windows": 7747,
+      "phase_err_pct": 23.949209213256836,
+      "rmse_deg": 3.2174673080444336
+    },
+    "walk_variable_flat": {
+      "n_windows": 7685,
+      "phase_err_pct": 23.188222885131836,
+      "rmse_deg": 5.063382625579834
+    }
+  },
+  "by_speed": {}
+}
